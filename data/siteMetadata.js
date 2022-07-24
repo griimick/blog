@@ -1,7 +1,7 @@
 const siteMetadata = {
-	title: 'Blawg',
-	author: 'Soumik Pradhan',
-	headerTitle: 'Blawg',
+	title: 'Blog',
+	author: 'Soumik',
+	headerTitle: 'Blog',
 	description: 'Another attempt to post my notes',
 	language: 'en-us',
 	theme: 'system', // system, dark or light
