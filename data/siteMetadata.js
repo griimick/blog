@@ -9,6 +9,7 @@ const siteMetadata = {
 	siteRepo: 'https://github.com/griimick/blog',
 	siteLogo: '/static/images/avatar.png',
 	image: '/static/images/avatar.png',
+	irlImage: '/static/images/irl.png',
 	socialBanner: '/static/images/twitter-card.png',
 	email: 'soumik@antarx.tech',
 	github: 'https://github.com/griimick',
