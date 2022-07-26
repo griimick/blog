@@ -1,8 +1,8 @@
 ---
 name: Soumik Pradhan
 avatar: /static/images/avatar.png
-occupation: Senior Software Tinkerer
-company: Antares Tech
+occupation: Software Tinkerer
+company:
 email: soumik@antarx.tech
 twitter: https://twitter.com/griimick
 linkedin: https://www.linkedin.com/soumikpradhan14
