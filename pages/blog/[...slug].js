@@ -46,7 +46,7 @@ export default function Blog({ post, authorDetails, prev, next }) {
 
 	const previewDraft =
 		process.env.NODE_ENV === 'development' ||
-		['preview', 'development'].includes(process.env.VERCEL_ENV);
+		['preview', 'development'].includes(process.env.NEXT_PUBLIC_VERCEL_ENV);
 
 	return (
 		<>
