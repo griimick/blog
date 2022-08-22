@@ -2,6 +2,7 @@ import fs from 'fs';
 import PageTitle from '@/components/PageTitle';
 import generateRss from '@/lib/generate-rss';
 import { MDXLayoutRenderer } from '@/components/MDXComponents';
+import DraftBanner from '@/components/DraftBanner';
 import { formatSlug, getAllFilesFrontMatter, getFileBySlug, getFiles } from '@/lib/mdx';
 
 const DEFAULT_LAYOUT = 'PostLayout';
@@ -43,18 +44,25 @@ export async function getStaticProps({ params }) {
 export default function Blog({ post, authorDetails, prev, next }) {
 	const { mdxSource, toc, frontMatter } = post;
 
+	const previewDraft =
+		process.env.NODE_ENV === 'development' ||
+		['preview', 'development'].includes(process.env.VERCEL_ENV);
+
 	return (
 		<>
-			{frontMatter.draft !== true ? (
-				<MDXLayoutRenderer
-					layout={frontMatter.layout || DEFAULT_LAYOUT}
-					toc={toc}
-					mdxSource={mdxSource}
-					frontMatter={frontMatter}
-					authorDetails={authorDetails}
-					prev={prev}
-					next={next}
-				/>
+			{frontMatter.draft !== true || previewDraft ? (
+				<>
+					<DraftBanner />
+					<MDXLayoutRenderer
+						layout={frontMatter.layout || DEFAULT_LAYOUT}
+						toc={toc}
+						mdxSource={mdxSource}
+						frontMatter={frontMatter}
+						authorDetails={authorDetails}
+						prev={prev}
+						next={next}
+					/>
+				</>
 			) : (
 				<div className="mt-24 text-center">
 					<PageTitle>

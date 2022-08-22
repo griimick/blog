@@ -11,7 +11,7 @@ export default function ReadingProgress() {
 					style={{
 						transform: `translateX(${completion - 100}%)`,
 					}}
-					className={`fixed left-0 top-0 h-1 w-full bg-teal-400 transition-transform duration-150`}
+					className={`fixed left-0 top-0 h-1 w-full bg-primary-400 transition-transform duration-150`}
 				/>
 			</div>
 		</div>
