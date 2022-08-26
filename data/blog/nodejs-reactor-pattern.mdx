@@ -12,11 +12,15 @@ summary: 'Looking into Node.js internal architecture for its Reactor Pattern imp
 
 Node.js is an asynchronous event-driven JavaScript runtime. It operates on a single-threaded event loop, using non-blocking I/O calls which allows it to support many concurrent connections without incurring the cost of context switching. This is in contrast to a more common concurrency model, where each connection is handled by a relatively heavyweight OS process or thread.
 
+Node.js uses [libuv](http://docs.libuv.org/en/v1.x/) libuv as an abstraction layer over different I/O polling mechanisms, cross-platform file I/O and threading functionality and much more for its event driven asynchronous I/O model. Take a look at its feature list and see what this unicorn is all about.
+
 ## Reactor Pattern
 
-Quoting from the [original paper](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf) which describes this concurrency pattern,
+Quoting from the original paper which describes this concurrency pattern,
 
 > The Reactor design pattern handles service requests that are delivered concurrently to an application by one or more clients. Each service in an application may consist of serveral methods and is represented by a separate event handler that is responsible for dispatching service-specific requests. Dispatching of event handlers is performed by an initiation dispatcher, which manages the registered event handlers. Demultiplexing of service requests is performed by a synchronous event demultiplexer.
+
+from [Reactor - An Object Behavioral Pattern for Demultiplexing and Dispatching Handles for Synchronous Events, 1995](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf), insightful and very intereseting read.
 
 The key components that participate in the Reactor patterns are as follows:
 
@@ -41,7 +45,16 @@ The above components function together as follows,
 - **Event Handlers** are indetified by their associated **Handles**
 - An **Event Handler** hook method will be called by the **Initiation Dispatcher** for a given **Handle** when a new event is detected by the **Synchronous Event Demultiplexer** for that particular **Handle**.
 
-![Class diagram showing the structure of all the involved components]("")
+<figure class="flex flex-col items-center">
+	<Image
+		src="/static/images/reactor-class-light.svg"
+		srcDark="/static/images/reactor-class-dark.svg"
+		alt="avatar"
+		width="600px"
+		height="600px"
+	/>
+	<figcaption>Class diagram showing the structure of all the involved components</figcaption>
+</figure>
 
 Taking Node.js as an example for Reactor Pattern implementation, following is how we can relate,
 
@@ -86,11 +99,16 @@ Taking Node.js as an example for Reactor Pattern implementation, following is ho
 3. **Chain of Responsibility Pattern**: Reactor pattern associates a specific Event Handler to a particular source of event whereas COR pattern searches a chain to find first matching Event Handler.
 4. **Fascade Pattern**: Implementation of Reactor Pattern provides a Fascade for event demultiplexing.
 
+<hr />
+
+This concludes this writeup. Patterns and designs work in a given constraint and solve specific problems, there are tradeoffs.
+
 ## References
 
-1. [Reactor Pattern - Wikipedia](https://en.wikipedia.org/wiki/Reactor_pattern)
-2. [Reactor - An Object Behavioral Pattern for Demultiplexing and Dispatching Handles for Synchronous Events, 1995](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
-3. [Interrupt - Wikipedia](https://en.wikipedia.org/wiki/Interrupt)
-4. [Blocking I/O, Nonblocking I/O, And Epoll](https://eklitzke.org/blocking-io-nonblocking-io-and-epoll)
-5. [The C10K Problem](http://www.kegel.com/c10k.html)
-6. [An Introduction to libuv](https://nikhilm.github.io/uvbook/index.html)
+1. [Reactor - An Object Behavioral Pattern for Demultiplexing and Dispatching Handles for Synchronous Events, 1995](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
+2. [Reactor Pattern - Wikipedia](https://en.wikipedia.org/wiki/Reactor_pattern)
+3. [Blocking I/O, Nonblocking I/O, And Epoll](https://eklitzke.org/blocking-io-nonblocking-io-and-epoll)
+4. [An Introduction to libuv](https://nikhilm.github.io/uvbook/index.html)
+5. [Comparing Two High-Performance I/O Design Patterns, 2005](https://www.artima.com/articles/comparing-two-high-performance-io-design-patterns)
+6. [libuv - Design Overview](http://docs.libuv.org/en/v1.x/design.html)
+7. [Linux – IO Multiplexing – Select vs Poll vs Epoll](https://devarea.com/linux-io-multiplexing-select-vs-poll-vs-epoll/#.YwjfuHZBxhE)
