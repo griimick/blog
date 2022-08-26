@@ -8,18 +8,89 @@ layout: 'PostSimple'
 summary: 'Looking into Node.js internal architecture for its Reactor Pattern implementation'
 ---
 
+## A little about Node.js
+
 Node.js is an asynchronous event-driven JavaScript runtime. It operates on a single-threaded event loop, using non-blocking I/O calls which allows it to support many concurrent connections without incurring the cost of context switching. This is in contrast to a more common concurrency model, where each connection is handled by a relatively heavyweight OS process or thread.
 
-Some points to know before we look deeper into the internals,
+## Reactor Pattern
 
-1. Javascript is a strictly synchronous language. All lines of code are executed sequentially in order just like C or Java or Python.
-2. Actual events that a node.js application waits on requires no looping at all for updates. In fact it requires ~0% CPU tim
-   e.
-3. The word _handler_ is from the time when interrupts were invented, introducing asynchronous opertion in computers at a hardware level. Interrupts was introduced to speed up I/O operations by eliminating the need to poll some input with software in an infinite loop—taking CPU time away from useful work—and letting the hardware send a signal to the CPU to tell it that an event has occurred. The CPU then suspends the currently running program and execute another program to handle the interrupt—we ended up calling those functions _interrupt handlers_.
-4. There are two types of I/O, namely, Synchronous I/O and Asynchronous I/O. Former blocks your requesting thread at multiple places and later blocks only at one place where your thread is waiting for events.
+Quoting from the [original paper](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf) which describes this concurrency pattern,
+
+> The Reactor design pattern handles service requests that are delivered concurrently to an application by one or more clients. Each service in an application may consist of serveral methods and is represented by a separate event handler that is responsible for dispatching service-specific requests. Dispatching of event handlers is performed by an initiation dispatcher, which manages the registered event handlers. Demultiplexing of service requests is performed by a synchronous event demultiplexer.
+
+The key components that participate in the Reactor patterns are as follows:
+
+1. **Handles**
+   - a unique identifiers for resources managed by the operating system.
+   - for example, file descriptors (`fd`) in Linux and file handles in Windows.
+2. **Synchronous Event Demultiplexer**
+   - blocks and awaits for events to happen on a set of **Handles**. returns when it is possible to initiate operation on a **Handle** without blocking.
+   - for example, `select`, `poll`, `epoll` in Unix, `kqueue` in OSX and other BSDs, and `IOCP` on Windows.
+3. **Initiation Dispatcher**
+   - defines interface for registering, removing and dispatching **Event Handlers**.
+   - uses **Synchronous Event Demultiplexer** to detect new events for the **Handles**.
+   - some common events include connection acceptance events, data input, data ouput, and timeout.
+4. **Event Handler**
+   - defines interface specifying the hook event handler method. It is implemented by application code.
+5. **Event Handler Concrete**
+   - implments the hook method as well as other helper methods needed to handle the event.
+
+The above components function together as follows,
+
+- Application registers **Concrete Event Handler** with the **Initiation Dispatcher**, mentioning the the type of event(s) this **Event Handler** should be be used to notify about when the event(s) happen on an associated **Handle**.
+- **Event Handlers** are indetified by their associated **Handles**
+- An **Event Handler** hook method will be called by the **Initiation Dispatcher** for a given **Handle** when a new event is detected by the **Synchronous Event Demultiplexer** for that particular **Handle**.
+
+![Class diagram showing the structure of all the involved components]("")
+
+Taking Node.js as an example for Reactor Pattern implementation, following is how we can relate,
+
+1. **Handles**
+
+   In Node.js process running in a unix system, handles are the file descriptors created for every:
+
+   - target file to read or write to
+   - socket for an incoming connection
+   - socket which a server listens to
+
+2. **Synchronous Event Demultiplexer**
+
+   Node.js uses `epoll` in Unix, `kqueue` in OSX and other BSDs, and `IOCP` on Windows as an implementation of **Synchronous Event Demultiplexer** to detect new events on **Handles** i.e. open files, open connections sockets, etc. **Event Demultiplexer** is not an atomic entity, but a collection of an I/O processing APIs abstracted by the `libuv`. `epoll` takes file descriptor `fd` and event type(s) as input to be added to watchlist (or the **interested** list). When queried, it gives the set of file descriptors which are ready from the intereseted list, eg, `fd` corresponding for a TCP socket is "ready for reading".
+
+3. **Initiation Dispatcher**
+
+   Node.js uses an `libuv` as an abstraction that provides the functionality of event loop including event queuing mechanism. The event loop registers **Handles** and a list of event(s) of _interest_ to the **Synchronous Event Demultiplexer**, like `epoll` in unix.
+
+4. **Event Handler** and **Event Handler Concrete**
+
+   Node.js have inbuilts event handlers of various events for all types of **Handles** which in the end triggers a callback in the JavaScript domain.
+
+### Benefits
+
+1. Allows for simple concurrency without the additional complexity of multiple threads to application code.
+2. Modular and extensible application code seperate from reactor implementations. In Node.js, application code is written in javascript and the actual reactor is inside the runtime.
+
+### Limitations
+
+1. Difficult to debug than procedural pattern due to inverted flow of control.
+2. Limited maximum concurrency because of synchronous calling of event handlers. In Node.js, the event handlers execution and the event loop runs in the same thread. So technically any code getting executed in event handlers is blocking the event loop and stalling pending events.
+3. Limited scalibity because of Event Handlers running synchronously and Synchronous Event Demultiplexer. In Node.js, event loop can process only one event handler at a time.
+4. It can only to applied in OS which supports handles, file descriptor in Linux and file handle in Windows.
+
+### Comparision with other Patterns
+
+1. **Observer Pattern**: Reactor and Observer both react to events. Reactor is generally used to demultiplex events from multiple event sources to their associated event handlers, whereas an Observer is associated with a singe source of event.
+2. **Proactor Pattern**: In Reactor, we poll for interest event on handlers before doing something, whereas in Proactor we do something and poll for its completion. For example, see behaviour of send operation on a socket with `IOCP` in Windows as an example of Proactor. Quoting from original paper,
+   > The Proactor supports the demultiplexing and dispatching of multiple event handlers that are triggered by the completion of asynchronous events. In contrast, the Reactor pattern is responsible for demultiplexing and dispatching of multiple event handlers that are triggered when it is possible to initiate an
+   > operation synchronously without blocking
+3. **Chain of Responsibility Pattern**: Reactor pattern associates a specific Event Handler to a particular source of event whereas COR pattern searches a chain to find first matching Event Handler.
+4. **Fascade Pattern**: Implementation of Reactor Pattern provides a Fascade for event demultiplexing.
 
 ## References
 
 1. [Reactor Pattern - Wikipedia](https://en.wikipedia.org/wiki/Reactor_pattern)
-2. [Interrupt - Wikipedia](https://en.wikipedia.org/wiki/Interrupt)
-3. [Blocking I/O, Nonblocking I/O, And Epoll](https://eklitzke.org/blocking-io-nonblocking-io-and-epoll)
+2. [Reactor - An Object Behavioral Pattern for Demultiplexing and Dispatching Handles for Synchronous Events, 1995](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
+3. [Interrupt - Wikipedia](https://en.wikipedia.org/wiki/Interrupt)
+4. [Blocking I/O, Nonblocking I/O, And Epoll](https://eklitzke.org/blocking-io-nonblocking-io-and-epoll)
+5. [The C10K Problem](http://www.kegel.com/c10k.html)
+6. [An Introduction to libuv](https://nikhilm.github.io/uvbook/index.html)

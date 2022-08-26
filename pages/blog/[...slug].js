@@ -52,7 +52,7 @@ export default function Blog({ post, authorDetails, prev, next }) {
 		<>
 			{frontMatter.draft !== true || previewDraft ? (
 				<>
-					<DraftBanner />
+					{frontMatter.draft === true ? <DraftBanner /> : null}
 					<MDXLayoutRenderer
 						layout={frontMatter.layout || DEFAULT_LAYOUT}
 						toc={toc}
