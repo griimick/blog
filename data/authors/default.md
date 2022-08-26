@@ -1,12 +1,13 @@
 ---
 name: Soumik Pradhan
 avatar: /static/images/avatar.png
-occupation: Senior Software Tinkerer
-company: Antares Tech
+occupation: Software Tinkerer
+company:
 email: soumik@antarx.tech
 twitter: https://twitter.com/griimick
-linkedin: https://www.linkedin.com/soumikpradhan14
+linkedin: https://www.linkedin.com/in/soumikpradhan
 github: https://github.com/griimick
 ---
 
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+With an experience of more than 3 years in Full Stack development, I have an extensive understanding of both frontend and backend i.e. from client facing interfaces to backend modules. I have primarily worked on Real Time Communication solutions, building Media pipelines using Gstreamer and integrating Media Server solutions.
+Open to share experiences and talk about tech in general. Feel free to connect :)
