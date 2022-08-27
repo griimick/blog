@@ -23,6 +23,17 @@ from [Reactor - An Object Behavioral Pattern for Demultiplexing and Dispatching 
 
 The key components that participate in the Reactor patterns are as follows:
 
+<figure class="flex flex-col items-center">
+	<Image
+		src="/static/images/reactor-class-light.svg"
+		srcDark="/static/images/reactor-class-dark.svg"
+		alt="avatar"
+		width="600px"
+		height="600px"
+	/>
+	<figcaption>Class diagram showing the structure of all the involved components</figcaption>
+</figure>
+
 1. **Handles**
    - unique identifiers for resources managed by the operating system.
    - for example, file descriptors (`fd`) in Linux and file handles in Windows.
@@ -46,13 +57,13 @@ The above components function together as follows,
 
 <figure class="flex flex-col items-center">
 	<Image
-		src="/static/images/reactor-class-light.svg"
-		srcDark="/static/images/reactor-class-dark.svg"
+		src="/static/images/reactor-flow-light.svg"
+		srcDark="/static/images/reactor-flow-dark.svg"
 		alt="avatar"
 		width="600px"
 		height="600px"
 	/>
-	<figcaption>Class diagram showing the structure of all the involved components</figcaption>
+	<figcaption>Diagram of the workflow</figcaption>
 </figure>
 
 Taking Node.js as an example for Reactor Pattern implementation, the following is how we can relate,
@@ -100,7 +111,8 @@ Taking Node.js as an example for Reactor Pattern implementation, the following i
 
 <hr />
 
-This concludes this write-up. Patterns and designs work in a given constraint and solve specific problems, there are tradeoffs.
+This concludes the write-up. Patterns and designs solve specific problems and within constraints, there is always a tradeoff behind every decision.
+This being my first write-up was full of ups and downs, distractions, but finally made it. Learnt a lot and I hope this reduces the barrier of writing things down.
 
 ## References
 
