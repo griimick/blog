@@ -1,0 +1,31 @@
+---
+title: 'Different phases of Event Loop'
+date: '2022-09-03'
+lastmod: '2022-09-03'
+tags: ['nodejs', 'javascipt', 'internals']
+layout: 'PostSimple'
+draft: true
+summary: 'Breaking down the different phases of Event Loop in Node.js and Browser'
+---
+
+## A little about Node.js
+
+Node.js is an asynchronous event-driven JavaScript runtime. It operates on a single-threaded event loop, using non-blocking I/O calls which allows it to support many concurrent connections without incurring the cost of context switching. This is in contrast to a more common concurrency model, where each connection is handled by a relatively heavyweight OS process or thread.
+
+Node.js uses libuv as an abstraction layer over different I/O polling mechanisms, cross-platform file I/O, threading functionality, and much more for its event-driven asynchronous I/O model. Take a look at its feature list and see what this unicorn is all about.
+
+<figure class="flex flex-col items-center">
+	<Image
+		src="/static/images/blog/nodejs-reactor-pattern/reactor-class-light.svg"
+		srcDark="/static/images/blog/nodejs-reactor-pattern/reactor-class-dark.svg"
+		alt="avatar"
+		width="600px"
+		height="600px"
+	/>
+	<figcaption>Class diagram showing the structure of all the involved components</figcaption>
+</figure>
+
+## References
+
+1. [An Introduction to libuv](https://nikhilm.github.io/uvbook/index.html)
+2. [libuv - Design Overview](http://docs.libuv.org/en/v1.x/design.html)
