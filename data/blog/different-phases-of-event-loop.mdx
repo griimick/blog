@@ -1,5 +1,5 @@
 ---
-title: 'Different phases of Event Loop'
+title: 'Different phases of Event Loop in JavaScript'
 date: '2022-09-03'
 lastmod: '2022-09-03'
 tags: ['nodejs', 'javascipt', 'internals']
@@ -8,22 +8,43 @@ draft: true
 summary: 'Breaking down the different phases of Event Loop in Node.js and Browser'
 ---
 
-## A little about Node.js
+JavaScript execution takes place in a single thread i.e. a single line of code is being executed at any given point of time and if there if the code requires to wait for any async operation, it will wait for it to execute, blocking the execution.
 
-Node.js is an asynchronous event-driven JavaScript runtime. It operates on a single-threaded event loop, using non-blocking I/O calls which allows it to support many concurrent connections without incurring the cost of context switching. This is in contrast to a more common concurrency model, where each connection is handled by a relatively heavyweight OS process or thread.
+Event loop is what JavaScript uses to implment non-blocking execution. Rather it is something that is implemented by the runtime engine. There are two major environments JavaScript runs in,
 
-Node.js uses libuv as an abstraction layer over different I/O polling mechanisms, cross-platform file I/O, threading functionality, and much more for its event-driven asynchronous I/O model. Take a look at its feature list and see what this unicorn is all about.
+1. Browser
+2. Node.js
 
-<figure class="flex flex-col items-center">
-	<Image
-		src="/static/images/blog/nodejs-reactor-pattern/reactor-class-light.svg"
-		srcDark="/static/images/blog/nodejs-reactor-pattern/reactor-class-dark.svg"
-		alt="avatar"
-		width="600px"
-		height="600px"
-	/>
-	<figcaption>Class diagram showing the structure of all the involved components</figcaption>
-</figure>
+## Concept
+
+Event Loop is a programming costruct that waits for and dispatches events. It is the contruct which controls the code flow in JavaScript, making requests and waiting for responses from other "event providers" which can be other processes, the kernel or even external entities.
+
+Event Loop can also be seen in conjunction to the Reactor Pattern—described in my [other post](/blog/nodejs-reactor-pattern).
+
+It sends requests, waits for events, collects the responses from those events, processes the responses which may trigger more requests and this keep on running endlessly in a loop until there is nothing left to process and there are no events to wait for.
+
+## Node.js
+
+Node.js uses [libuv](https://github.com/libuv/libuv) for its event loop. The Event Loop is the central part of `libuv`. It runs on a single thread. It can also be run on different thread with the new [Worker Threads](https://nodejs.org/api/worker_threads.html) in Node.js. This is different from using the `Cluster` module which runs multiple Node.js processes—each with their own thread with an event loop—to distribute load and share server ports.
+
+Before diving into the event loop and the order of phases, looking into the phases mentioned by the official [Node.js documentation](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#event-loop-explained),
+
+1. Timers phase
+2. Pending phase
+3. Idle and Prepare phase
+4. Poll phase
+5. Check phase
+6. Close phase
+
+In addition to the above phases, there are two more phases which are specifically implemented in Node.js
+
+## Browser
+
+The runtime in browser has its own implentation of the Event Loop—it factors in browser specific events and the DOM.
+
+The macrotask phases which were mentioned in Node.js are also present in the Browser. The only difference lies in the microtask phases. Namely, instead of nextTick, setImmediate
+
+Browser
 
 ## References
 
